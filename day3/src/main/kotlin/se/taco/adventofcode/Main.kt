@@ -11,31 +11,20 @@ fun main(args: Array<String>) {
     for (line in data) {
         fabricList.add(parseFabric(line))
     }
-    var points: MutableSet<Point> = mutableSetOf()
-    var intersects = 0
+    var intersects: MutableSet<Int> = mutableSetOf()
+
     fabricList.forEachIndexed { index, fabric ->
-        for (i in 1..(fabricList.size - 1)) {
-            if (fabricList[i].rectangle.intersects(fabric.rectangle)) {
-                val calculateIntersects = calculateIntersects(fabricList[i].rectangle, fabric.rectangle)
-                intersects += calculateIntersects.size
-                points.addAll(calculateIntersects)
+        for (i in 0..fabricList.lastIndex) {
+            if (fabric == fabricList[i]) {
+                continue
+            }
+            if (fabric.rectangle.intersects(fabricList[i].rectangle)) {
+                intersects.add(fabric.id)
             }
         }
     }
-    println(intersects)
-    println(points.size)
-}
+    println(fabricList.filter { !intersects.contains(it.id) })
 
-fun calculateIntersects(rectangle: Rectangle, rectangle2: Rectangle): Set<Point> {
-    val intersection = rectangle.intersection(rectangle2)
-    val points: MutableSet<Point> = mutableSetOf()
-
-    for (x in (intersection.x..(intersection.width + intersection.x - 1))) {
-        for (y in (intersection.y..(intersection.height + intersection.y - 1))) {
-            points.add(Point(x, y))
-        }
-    }
-    return points
 }
 
 fun parseFabric(line: String): Fabric {
@@ -44,13 +33,6 @@ fun parseFabric(line: String): Fabric {
     val secondSplit = firstSplit[1].split(":")
     val thirdSplit = secondSplit[0].trim().split(",")
     val fourth = secondSplit[1].trim().split("x")
-    /*val points: MutableList<Point> = mutableListOf()
-
-    for (x in (thirdSplit[0].toInt()..fourth[0].toInt())) {
-        for (y in (thirdSplit[1].toInt()..fourth[1].toInt())) {
-            points.add(Point(x, y))
-        }
-    }*/
     return Fabric(id, Rectangle(thirdSplit[0].toInt(), thirdSplit[1].toInt(), fourth[0].toInt(), fourth[1].toInt()))
 }
 
