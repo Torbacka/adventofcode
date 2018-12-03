@@ -1,42 +1,40 @@
 package se.taco.adventofcode
 
-import java.awt.Point
 import java.awt.Rectangle
 import java.nio.file.Files
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
     val data: List<String> = Files.readAllLines(Paths.get("src/main/resources/data.txt"))
-    val fabricList: MutableList<Fabric> = mutableListOf()
+    val table: Array<Array<Int>> = Array(1001) { Array(1001) {0} }
+
     for (line in data) {
-        fabricList.add(parseFabric(line))
-    }
-    var points: MutableSet<Point> = mutableSetOf()
-    var intersects = 0
-    fabricList.forEachIndexed { index, fabric ->
-        for (i in 1..(fabricList.size - 1)) {
-            if (fabricList[i].rectangle.intersects(fabric.rectangle)) {
-                val calculateIntersects = calculateIntersects(fabricList[i].rectangle, fabric.rectangle)
-                intersects += calculateIntersects.size
-                points.addAll(calculateIntersects)
+        val fabric = parseFabric(line)
+        for (i in 0 until fabric.rectangle.width) {
+            for (n in 0 until fabric.rectangle.height) {
+                table[fabric.rectangle.x + i][fabric.rectangle.y + n]++
             }
         }
     }
-    println(intersects)
-    println(points.size)
-}
-
-fun calculateIntersects(rectangle: Rectangle, rectangle2: Rectangle): Set<Point> {
-    val intersection = rectangle.intersection(rectangle2)
-    val points: MutableSet<Point> = mutableSetOf()
-
-    for (x in (intersection.x..(intersection.width + intersection.x - 1))) {
-        for (y in (intersection.y..(intersection.height + intersection.y - 1))) {
-            points.add(Point(x, y))
+    for (i in 0..1000) {
+        for (n in 0..1000) {
+            print(table[i][n])
+        }
+        println()
+    }
+    var total = 0
+    for (i in 0..1000) {
+        for (n in 0..1000) {
+            if (table[i][n] > 1) {
+                total++
+            }
         }
     }
-    return points
+
+    println(total)
+
 }
+
 
 fun parseFabric(line: String): Fabric {
     val firstSplit = line.split("@")
