@@ -38,11 +38,7 @@ fun main(args: Array<String>) {
     }
 
     val maxBy = schedules.maxBy {
-        return@maxBy if (it.value.sleeping_minutes.isNotEmpty()) {
-            it.value.sleeping_minutes.maxBy { entries -> entries.value }!!.value
-        } else {
-            0
-        }
+        it.value.sleeping_minutes.values.sum()
     }!!
     println("Id: ${maxBy.key},  ${maxBy.value.sleeping_minutes.maxBy { it.value }!!.key}")
 
