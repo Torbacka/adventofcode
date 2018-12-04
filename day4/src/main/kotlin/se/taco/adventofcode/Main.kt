@@ -4,7 +4,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 fun main(args: Array<String>) {
     val data: List<String> = Files.readAllLines(Paths.get("src/main/resources/data.txt"))
@@ -18,46 +17,73 @@ fun main(args: Array<String>) {
     input.toSortedMap().forEach { localDateTime, s ->
         println("Date: $localDateTime   data: $s")
     }
-    var schedules: MutableMap<Int ,Schedule> = mutableMapOf()
-    var last_date: LocalDateTime = LocalDateTime.now()
-    var awake_minutes: Long = 0
-    var sleep_minutes: Long = 0
-    var id = 0
+
+    var schedule: Schedule? = null
+    var schedules: MutableMap<Int, Schedule> = mutableMapOf()
     input.toSortedMap().forEach { localDateTime, info ->
-        when {
-            info.contains("Guard") -> {
-                awake_minutes += ChronoUnit.MINUTES.between(last_date, last_date.withHour(1).withMinute(0))
-
-                if (schedules.containsKey(id)) {
-                    var schedule = schedules[id]!!
-                    schedule.awake_minutes += awake_minutes
-                    schedule.sleep_minutes += sleep_minutes
-                } else {
-                    schedules[id] = Schedule(id, awake_minutes, sleep_minutes)
-                }
-
-                awake_minutes = 0
-                sleep_minutes = 0
-                id = info.substringAfter("#").substringBefore(" ").toInt()
+        if (info.contains("Guard")) {
+            schedule?.let {
+                schedules[schedule!!.id] = schedule!!
             }
-            info == "falls asleep" -> awake_minutes += ChronoUnit.MINUTES.between(last_date, localDateTime)
+            var id = info.substringAfter("#").substringBefore(" ").toInt()
 
-            info == "wakes up" -> sleep_minutes += ChronoUnit.MINUTES.between(last_date, localDateTime)
-
+            schedule = if (schedules.containsKey(id)) {
+                schedules[id]
+            } else {
+                Schedule(id, localDateTime, false)
+            }
+        } else {
+            schedule!!.add(localDateTime, info)
         }
-        last_date = localDateTime
-
     }
 
-    println(schedules.values.maxBy { it -> it.sleep_minutes })
-
+    val maxBy = schedules.maxBy {
+        return@maxBy if (it.value.sleeping_minutes.isNotEmpty()) {
+            it.value.sleeping_minutes.maxBy { entries -> entries.value }!!.value
+        } else {
+            0
+        }
+    }!!
+    println("Id: ${maxBy.key},  ${maxBy.value.sleeping_minutes.maxBy { it.value }!!.key}")
 
 }
 
+
 data class Schedule(
     val id: Int,
-    var awake_minutes: Long,
-    var maxSleep: Long,
-    var minute: Int,
-    var sleep_minutes: Long
-)
+    var last_date: LocalDateTime,
+    var sleeping: Boolean,
+    var awake_minutes: MutableMap<Int, Int> = mutableMapOf(),
+    var sleeping_minutes: MutableMap<Int, Int> = mutableMapOf()
+) {
+    fun add(dateTime: LocalDateTime, data: String) {
+        when (data) {
+            "wakes up" -> {
+                for (i in last_date.minute until dateTime.minute) {
+                    if (sleeping_minutes.containsKey(i)) {
+                        var numberOfTimes = sleeping_minutes[i]!!
+                        sleeping_minutes[i] = ++numberOfTimes
+                    } else {
+                        sleeping_minutes[i] = 1
+                    }
+                }
+                sleeping = false
+            }
+            "falls asleep" -> {
+                for (i in last_date.minute until dateTime.minute) {
+                    if (awake_minutes.containsKey(i)) {
+                        var numberOfTimes = awake_minutes[i]!!
+                        awake_minutes[i] = ++numberOfTimes
+                    } else {
+                        awake_minutes[i] = 1
+                    }
+                }
+
+                sleeping = true
+            }
+        }
+        last_date = dateTime
+    }
+
+}
+

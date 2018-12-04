@@ -1,13 +1,8 @@
-import numpy as np
-import parse
+from collections import defaultdict
+import re
+import json
 
-claim_matcher = '''#{id:d} @ {x:d},{y:d}: {width:d}x{height:d}\n'''
-fabric = np.zeros((1000, 1000), dtype=np.int)
-
-
-for line in open('input.txt'):
-    r = parse.parse(claim_matcher, line)
-    claim = fabric[r['y']: r['y'] + r['height'], r['x']: r['x'] + r['width']]
-    claim[:] = claim + 1
-
-print(np.sum(np.where(fabric > 1, 1, 0)))
+data = open('input.txt')
+claims = map(lambda s: map(int, re.findall(r'-?\d+', s)), data)
+for (claim_id, x, y, width, height) in claims:
+    print("%s, %s, %s, %s, %s" % (claim_id, x,y ,width, height) )
