@@ -4,27 +4,14 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
-    val data: String = Files.readAllLines(Paths.get("src/main/resources/data.txt"))[0]
-    val results: MutableMap<Int, String> = mutableMapOf()
-    var c = 'a'
-    while (c <= 'z') {
-        val testData = data.replace(c.toString(), "", true)
-        val size  = solve(testData)
-        results[size] = testData
-        ++c
-    }
-    println(results.keys.min())
-}
-
-private fun solve(data: String): Int {
-    var data1 = data
+    var data: String = Files.readAllLines(Paths.get("src/main/resources/data.txt"))[0]
     var reductions = 1
     while (reductions > 0) {
-        val reduce = reduce(data1)
-        data1 = reduce.second
+        val reduce = reduce(data)
+        data = reduce.second
         reductions = reduce.first
     }
-    return data1.length
+    println(data.length)
 }
 
 fun reduce(data: String): Pair<Int, String> {
