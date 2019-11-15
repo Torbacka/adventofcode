@@ -1,27 +1,52 @@
+@file:Suppress("SENSELESS_COMPARISON")
+
 package se.taco.adventofcode
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
-fun main(args: Array<String>) {
+fun main() {
     val data: List<String> = Files.readAllLines(Paths.get("src/main/resources/data.txt"))
     val graph = parseData(data)
     println(graph)
     var noIncomingEdge: PriorityQueue<String> = graph.findIncomingEdgesZero()
     var time = 0
     var numberOfWorkers = 2
-    var tasks: MutableList<String> = mutableListOf()
+    var tasks: MutableMap<String, Int> = mutableMapOf()
+    var taskString: String = ""
     while (noIncomingEdge.isNotEmpty() or tasks.isNotEmpty()) {
+        var node: String? = null
 
-        val node: String = noIncomingEdge.poll()
-        graph.incomingEdges[node]
-        if (noIncomingEdge.isNotEmpty() && tasks.size < numberOfWorkers) {
+        val iterator = tasks.iterator()
+        while (iterator.hasNext()) {
+            val task: MutableMap.MutableEntry<String, Int> = iterator.next()
+            val finishTime: Int = task.key[0].minus(64).toInt() + 60 + task.value
+            if (time >= finishTime) {
+                noIncomingEdge = graph.removeEdges(task.key, noIncomingEdge)
+                iterator.remove()
 
-        } else {
-
+            }
         }
+
+        if (noIncomingEdge.isNotEmpty() && tasks.size < numberOfWorkers) {
+            node = noIncomingEdge.poll()
+            tasks[node] = time
+            taskString += node
+            val freeTasks = numberOfWorkers - tasks.size
+
+            for (i in 1..freeTasks) {
+                if (noIncomingEdge.isNotEmpty()) {
+                    node = noIncomingEdge.poll()
+                    tasks[node] = time
+                    taskString += node
+                }
+            }
+        }
+        time++
     }
+    print(taskString)
+    print((time - 1))
 }
 
 fun <T> Graph<T>.removeEdges(node: T, noIncomingEdge: PriorityQueue<T>): PriorityQueue<T> {
@@ -38,7 +63,7 @@ fun <T> Graph<T>.removeEdges(node: T, noIncomingEdge: PriorityQueue<T>): Priorit
 }
 
 fun <T> Graph<T>.findIncomingEdgesZero(): PriorityQueue<T> {
-    var noIncomingEdge: PriorityQueue<T> = PriorityQueue()
+    val noIncomingEdge: PriorityQueue<T> = PriorityQueue()
     this.incomingEdges
         .filter { it.value.size == 0 }
         .forEach {
@@ -50,7 +75,7 @@ fun <T> Graph<T>.findIncomingEdgesZero(): PriorityQueue<T> {
 
 fun parseData(data: List<String>): Graph<String> {
     var graph: Graph<String> = Graph()
-    for (c in 65..70) {
+    for (c in 65..90) {
         graph.add(c.toChar().toString())
     }
     for (line in data) {

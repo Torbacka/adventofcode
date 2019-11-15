@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.10"
+    kotlin("jvm") version "1.3.50"
 }
 
 group = "se.taco.adventofcode"
@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
 }
 
 tasks.withType<KotlinCompile> {
