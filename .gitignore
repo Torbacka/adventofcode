@@ -19,3 +19,4 @@ workspace.xml
 *.iml
 !**/testData/**/*.iml
 **/.idea/
+**/venv
