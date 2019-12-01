@@ -1,11 +1,13 @@
-import re
+import math
 
-parser = re.compile(" (.) .+ (.) ")
-pairs = [parser.search(line.strip()) for line in open("input/day_07.txt").readlines()]
+pairs = [int(line.strip()) for line in open("input/input.txt").readlines()]
 
 
 def main():
-    print(pairs)
+    fuel = 0
+    for pair in pairs:
+        fuel += math.floor(pair/3) - 2
+    print(fuel)
 
 
 if __name__ == '__main__':
