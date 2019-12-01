@@ -7,23 +7,22 @@ node_name = 'A'
 
 def main():
     tree = parse_tree(data.pop(0), data.pop(0), dict(), data)
-
-
     print(sum_tree(tree, 0))
 
 
 def sum_tree(root, total_sum):
-    tree = next(iter(root.values()))
-    if len(tree['children']) == 0:
-        return sum(tree['metadata'])
-    else:
-        for data in tree['metadata']:
-            if len(tree['children']) < data:
-                return 0
-            else:
-                total_sum += sum_tree(tree['children'][data - 1], total_sum)
-    return total_sum
-
+    for key, value in  root.items():
+        tree = value
+        if len(tree['children']) == 0:
+            return sum(tree['metadata'])
+        else:
+            for data in tree['metadata']:
+                if len(tree['children']) < data:
+                    continue
+                total_sum += sum_tree(tree['children'][data - 1], 0)
+        print(f"Value of node: {key},  {total_sum}")
+        return total_sum
+    return 0
 
 def parse_tree(number_of_children, number_of_metadata, tree, data):
     global node_name
