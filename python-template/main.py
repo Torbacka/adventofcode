@@ -1,8 +1,7 @@
 import re
 
-parser = re.compile(" (.) .+ (.) ")
-pairs = [parser.search(line.strip()) for line in open("input/day_07.txt").readlines()]
-
+parser = re.compile("-?\d+")
+data = [int(x) for line in open("input/input.txt").readlines() for x in parser.findall(line.strip())]
 
 def main():
     print(pairs)
