@@ -1,0 +1,10 @@
+# Compiled code
+*.class
+*.jar
+build/
+lib/
+out/
+
+# Intellij project files
+*.iml
+.idea/
