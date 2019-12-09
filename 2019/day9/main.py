@@ -5,9 +5,9 @@ import itertools
 def main():
     parser = re.compile("-?\d+")
     data = [int(x) for line in open("input/input.txt").readlines() for x in parser.findall(line.strip())]
-    program_states = prepare_program_states(data, [[5]])
+    program_states = prepare_program_states(data, [[2]])
     state = compute(program_states[0])
-    print(state)
+    print(state['output'][-1])
 
 
 def prepare_program_states(data, settings):
@@ -20,8 +20,9 @@ def prepare_program_states(data, settings):
 
 
 def prepare_program_state(data):
+    program = {i: number for i, number in enumerate(data)}
     return {
-        'program': data[:],
+        'program': program,
         'input': [],
         'output': [],
         'pc': 0,
@@ -40,11 +41,13 @@ def compute(program_state):
         parameter_modes = program_string[:-2]
         if op_code == "01":
             parameters = get_parameters(program_state, data, 3, parameter_modes)
-            data[parameters[2]] = data[parameters[0]] + data[parameters[1]]
+            products = get_products(data, parameters)
+            data[parameters[2]] = products[0] + products[1]
             program_state['pc'] += 4
         elif op_code == "02":
             parameters = get_parameters(program_state, data, 3, parameter_modes)
-            data[parameters[2]] = data[parameters[0]] * data[parameters[1]]
+            products = get_products(data, parameters)
+            data[parameters[2]] = products[0] * products[1]
             program_state['pc'] += 4
         elif op_code == "03":
             parameters = get_parameters(program_state, data, 1, parameter_modes)
@@ -85,7 +88,7 @@ def compute(program_state):
             program_state['pc'] += 4
         elif op_code == "09":  # relative base offset
             parameters = get_parameters(program_state, data, 1, parameter_modes)
-            program_state['relative_base'] = data[parameters[0]]
+            program_state['relative_base'] += data[parameters[0]]
             program_state['pc'] += 2
         elif op_code == "99":
             program_state['done'] = True
@@ -94,6 +97,15 @@ def compute(program_state):
             print("Halt and catch fire!!!")
 
     return program_state
+
+
+def get_products(data, parameters):
+    value1, value2 = 0, 0
+    if parameters[0] in data.keys():
+        value1 = data[parameters[0]]
+    if parameters[1] in data.keys():
+        value2 = data[parameters[1]]
+    return value1, value2
 
 
 def get_parameters(program_state, data, number_of_parameters, parameter_modes):
