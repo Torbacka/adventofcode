@@ -1,74 +1,65 @@
-import sys
+from sys import float_info
 
 from sympy import Point, zoo
-from sys import float_info
 
 
 def main():
     data = parse_input()
-    empty_score = {}
-    for station in data['asteroid']:
-        slopes = {}
-        seen = set()
-        for asteroid in data['asteroid']:
-            if station == asteroid:
+
+    station = Point(27, 19)  # solution part 1
+    slopes = {}
+    for asteroid in data['asteroid']:
+        if station == asteroid:
+            continue
+        slope = calculate_slope(station, asteroid)
+        if slope in slopes:
+            slopes[slope].append(asteroid)
+        else:
+            slopes[slope] = [asteroid]
+    sort_asteroids(slopes, station)
+    slopes[float_info.max] = slopes.pop(zoo)
+    i = 1
+    killed = []
+    first_half = True
+    while slopes.keys():
+        for slope in sorted(slopes.keys(), reverse=True):
+            print(slope)
+            asteroids = []
+            if first_half and slope >= 0:
+                asteroids = list(filter(lambda asteroid: asteroid.x >= station.x and asteroid.y <= station.y, slopes[slope]))
+            elif first_half and slope <= 0:
+                asteroids = list(filter(lambda asteroid: asteroid.x >= station.x and asteroid.y >= station.y, slopes[slope]))
+            elif not first_half and slope >= 0:
+                asteroids = list(filter(lambda asteroid: asteroid.x <= station.x and asteroid.y >= station.y, slopes[slope]))
+            elif not first_half and slope <= 0:
+                asteroids = list(filter(lambda asteroid: asteroid.x <= station.x and asteroid.y <= station.y, slopes[slope]))
+            if len(asteroids) == 0:
                 continue
-            slope = calculate_slope(station, asteroid)
-            if slope in slopes:
-                slopes[slope].append(asteroid)
-            else:
-                slopes[slope] = [asteroid]
-        sort_slopes(slopes, station)
-        seen.update([slopes[0] for slopes in slopes.values()])
-        seen.update(one_to_the_side(slopes, station))
-        for slope in slopes.values():
-            if len(slope) > 0:
-                seen.update(check_left_and_right(slope, station))
-        empty_score[station] = len(seen)
-    empty_score = {k: v for k, v in sorted(empty_score.items(), key=lambda item: item[1], reverse=True)}
-    print(empty_score)
+            asteroid = asteroids.pop(0)
+            killed.append(asteroid)
+            slopes[slope].remove(asteroid)
+            if len(slopes[slope]) == 0:
+                slopes.pop(slope)
+            i += 1
+        first_half = not first_half
+    print((killed[199].x*100) + killed[199].y)
 
 
-def check_left_and_right(slope, station):
-    seen = set()
-    if 0 == slope:
-        zero_slopes = slope
-        if len(zero_slopes) > 1:
-            counted = zero_slopes[0]
-            if station.x > counted.x:
-                asteroid = next((asteroid for asteroid in zero_slopes if station.x < asteroid.x), None)
-                if asteroid is not None:
-                    seen.add(asteroid)
-            elif station.x < counted.x:
-                asteroid = next((asteroid for asteroid in zero_slopes if station.x > asteroid.x), None)
-                if asteroid is not None:
-                    seen.add(asteroid)
-    else:
-        if len(slope) > 1:
-            counted = slope[0]
-            if station.y > counted.y:
-                asteroid = next((asteroid for asteroid in slope if station.y < asteroid.y), None)
-                if asteroid is not None:
-                    seen.add(asteroid)
-            elif station.y < counted.y:
-                asteroid = next((asteroid for asteroid in slope if station.y > asteroid.y), None)
-                if asteroid is not None:
-                    seen.add(asteroid)
-    return seen
+def find_slope(needle, slopes):
+    for slope, asteroids in slopes.items():
+        if needle in asteroids:
+            return slope
 
 
-def one_to_the_side(slopes, station):
-    seen = set()
-    not_seen = [slope for slopes in slopes.values() for slope in slopes[1:]]
-    for asteroid in not_seen:
-        if (station.x == asteroid.x + 1 or station.x == asteroid.x - 1) and station.y == asteroid.y:
-            seen.add(asteroid)
-        elif (station.y == asteroid.y + 1 or station.y == asteroid.y - 1) and station.x == asteroid.x:
-            seen.add(asteroid)
-    return seen
+def sort_slopes(slope1, slope2):
+    if slope1 == zoo:
+        slope1 = float_info.max
+    if slope2 == zoo:
+        slope2 = float_info.max
+    return slope1 - slope2
 
 
-def sort_slopes(slopes, station):
+def sort_asteroids(slopes, station):
     for value in slopes.values():
         value.sort(key=lambda x: sort_points(station, x))
 
@@ -78,7 +69,7 @@ def sort_points(point1, point2):
 
 
 def calculate_slope(point1, point2):
-    return (point1.y - point2.y) / (point1.x - point2.x)
+    return - (point1.y - point2.y) / (point1.x - point2.x)
 
 
 def parse_input():
