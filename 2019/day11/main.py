@@ -22,20 +22,23 @@ def main():
         if current_point not in hull:
             hull[current_point] = 0
         program_state['input'].append(hull[current_point])
-    print(len(hull))
+    print(f"part1: {len(hull)}")
     lowest_x = sorted(hull, key=lambda point: point.x)
     lowest_y = sorted(hull, key=lambda point: point.y)
     highest_x = sorted(hull, key=lambda point: point.x, reverse=True)
     highest_y = sorted(hull, key=lambda point: point.y, reverse=True)
+    print("Part2")
+
     for y in range(lowest_y[0].y, highest_y[0].y + 1):
         row = ""
         for x in range(lowest_x[0].x, highest_x[0].x):
             current = Point(x, y)
             if current not in hull:
-               row += "0 "
+                row += "0 "
             else:
                 row += str(hull[current]) + " "
         print(row)
+
 
 def get_current_point(turn, current_direction, current_point):
     if turn == 0:
