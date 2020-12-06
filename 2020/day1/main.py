@@ -1,6 +1,4 @@
-import re
-
-data = [int(line) for line in open("input/input.in").readlines()]
+data = [int(line) for line in open("input/input.in")]
 
 length = len(data)
 
@@ -9,5 +7,4 @@ for i in range(length):
         for k in range(j + 1, length):
             if (data[i] + data[j] + data[k]) == 2020:
                 print(data[i] * data[j] * data[k])
-
 
