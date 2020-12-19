@@ -1,0 +1,9 @@
+{
+        "attributes": {
+          "username": "john@exdample.com",
+          "password": "paSSword123$",
+          "testUser": true,
+          "testUserDescription": "Needed for Thunder load testing",
+          "testUserExpiration": "2020-12-15T00:00:00Z"
+        }
+}
