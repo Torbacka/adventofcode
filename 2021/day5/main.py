@@ -36,7 +36,7 @@ def points_on_line(point1, point2):
             points.append((x, point1[1]))
 
     else:
-        k = int((point1[1]-point2[1])/(point1[0] - point2[0]))
+        k = int((point1[1] - point2[1]) / (point1[0] - point2[0]))
         m = point1[1] - (k * point1[0])
         step = k
         if k < 0 and point1[0] < point2[0]:
@@ -44,8 +44,8 @@ def points_on_line(point1, point2):
         elif k > 0 and point1[0] > point2[0]:
             step *= -1
         for x in range(point1[0], point2[0], step):
-                y = k * x + m
-                points.append((x, y))
+            y = k * x + m
+            points.append((x, y))
     points.append(point2)
     return points
 
