@@ -1,5 +1,5 @@
 import re
-from statistics import median
+from statistics import median, mean
 
 data = [list(map(int, re.findall("-?\d+", line))) for line in open("input/input.in").readlines()]
 
@@ -10,8 +10,8 @@ def part_1(data):
 
 
 def part_2(data):
-    mean = round(sum(data) / len(data))
-    return sum(abs(d - mean) * (abs(d - mean) + 1) / 2 for d in data)
+    m = round(mean(data))
+    return sum(abs(d - m) * (abs(d - m) + 1) / 2 for d in data)
 
 
 if __name__ == '__main__':
