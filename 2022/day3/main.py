@@ -1,7 +1,5 @@
-import re
 from curses.ascii import islower
 
-parser = re.compile("-?\d+")
 data = [line.strip() for line in open("input/input.in").readlines()]
 sum = 0
 
