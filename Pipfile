@@ -6,7 +6,8 @@ name = "pypi"
 [packages]
 python-utils = "*"
 numpy = "*"
-itertools = "*"
+networkx = "*"
+letters = "*"
 
 [dev-packages]
 
