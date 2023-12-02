@@ -1,6 +1,6 @@
 import re
 
-parser = re.compile(r"\d")
+parser = re.compile(r"-?\d+")
 data = [line.strip() for line in open("input/input.in").readlines()]
 sum = 0
 numbers = {
@@ -19,6 +19,6 @@ for line in data:
     for i, number in enumerate(numbers, 1):
         line = line.replace(number, number[0] + str(i) + number[-1])
     found_numbers = parser.findall(line)
-    sum += int(found_numbers[0] + found_numbers[-1])
+    sum += int(found_numbers[0][0] + found_numbers[-1][-1])
 
 print(sum)
