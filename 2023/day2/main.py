@@ -18,9 +18,6 @@ for line in data:
             value, color = color.strip().split(" ")
             if bags[color] < int(value):
                 bags[color] = int(value)
-
-
-
     sum += bags["red"]*bags["green"]*bags["blue"]
 
 print(sum)
