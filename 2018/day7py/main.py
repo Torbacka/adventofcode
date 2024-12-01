@@ -33,10 +33,10 @@ class Graph:
             return hash(self.data)
 
         def __eq__(self, other):
-            return self.data == other.data
+            return self.data == other.horizontal
 
         def __lt__(self, other):
-            return self.data < other.data
+            return self.data < other.horizontal
 
         def __repr__(self):
             return f"Node(" \
@@ -73,7 +73,7 @@ class Worker:
     def __repr__(self):
         if not self.job:
             return " . "
-        return f" {self.job.data} "
+        return f" {self.job.horizontal} "
 
     @property
     def free(self):
